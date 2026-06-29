@@ -844,10 +844,10 @@ footer li button:hover, footer li a:hover { color: #fff; }
   .ctastrip { flex-direction: column; text-align: center; }
   .hero-inner { padding: 100px 24px 140px; }
   .hero-feats { padding: 0 24px; }
-  nav.main { position:fixed; inset:72px 16px auto 16px; flex-direction:column; border-radius:16px; padding:10px; gap:4px; box-shadow:0 30px 60px rgba(0,0,0,.6); display:none; }
+  nav.main { position:fixed; inset:72px 16px auto 16px; flex-direction:column; border-radius:16px; padding:10px; gap:4px; box-shadow:0 30px 60px rgba(0,0,0,.6); display:none; z-index:65; }
   nav.main.open { display:flex; }
   nav.main button { width:100%; text-align:left; padding:13px 16px; border-radius:10px; }
-  .menu-btn { display:inline-grid; }
+  .menu-btn { display:inline-grid; position:relative; z-index:70; pointer-events:auto; }
   .scroll-pill { display:none; }
 }
 @media(max-width:560px) {
@@ -1305,6 +1305,13 @@ footer li button:hover, footer li a:hover { color: #fff; }
     menuBtn.setAttribute('aria-expanded','false');
     window.scrollTo({top:0, behavior:'smooth'});
     if(id === 'home' && window.__heroIntro){ window.__heroIntro(); }
+    // Reveal elements in initially-hidden views are observed while display:none and
+    // can stay at opacity:0 if IntersectionObserver doesn't re-fire on display change
+    // (notably on iOS Safari). Force them visible so the switched-to view never looks blank.
+    var activeView = document.getElementById(id);
+    if(activeView){
+      activeView.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    }
   }
 
   document.body.addEventListener('click', function(e){
